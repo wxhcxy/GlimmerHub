@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>static/icon/find.png</file>
+        <file>static/icon/findG.png</file>
+        <file>static/icon/publishG.png</file>
+        <file>static/icon/publish.png</file>
+        <file>static/icon/messageG.png</file>
+        <file>static/icon/message.png</file>
+        <file>static/icon/myG.png</file>
+        <file>static/icon/my.png</file>
+    </qresource>
+</RCC>
