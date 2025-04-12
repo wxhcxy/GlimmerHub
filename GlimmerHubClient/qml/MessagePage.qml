@@ -10,7 +10,7 @@ Page {
         color:"red"
         anchors.fill: parent
         Text {
-            text: qsTr("消息")
+            text: qsTr("发布")
             color:"white"
             font.pixelSize: 30
             anchors.centerIn: parent

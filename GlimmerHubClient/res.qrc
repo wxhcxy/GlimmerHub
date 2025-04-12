@@ -8,5 +8,6 @@
         <file>static/icon/message.png</file>
         <file>static/icon/myG.png</file>
         <file>static/icon/my.png</file>
+        <file>static/icon/commentNumIcon.png</file>
     </qresource>
 </RCC>
