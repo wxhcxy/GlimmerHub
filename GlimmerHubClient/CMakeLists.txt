@@ -19,6 +19,7 @@ qt_add_qml_module(appGlimmerHubClient
     QML_FILES qml/Main.qml
     QML_FILES qml/FindPage.qml qml/MyPage.qml qml/MessagePage.qml qml/ContactPage.qml qml/BaseTabBar.qml
     RESOURCES res.qrc
+    QML_FILES qml/MyBusyIndicator.qml
 )
 
 target_compile_features(appGlimmerHubClient PRIVATE cxx_std_20)
