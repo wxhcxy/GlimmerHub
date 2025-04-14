@@ -12,8 +12,6 @@ Page {
     //     color: "yellow"
     // }
 
-    property int nCurUp: 0
-    property int nCurDown: 18
     property int nPullHeight: 34 // 下拉/上拉触发刷新的阈值高度
 
 
@@ -31,59 +29,92 @@ Page {
                 anchors.fill: parent
                 border.width: 0
                 color: "transparent"
+                ColumnLayout{
+                    anchors.fill: parent
+                    Image {
+                        id: delegateImage
+                        Layout.preferredHeight: parent.height*0.8
+                        Layout.fillWidth: true   // 填充父容器的宽度
+                        Layout.fillHeight: true  // 填充父容器的高度
+                        visible: false
+                        source: "file:///root/json/public/images/recommendImages/recommendImage18.png"
+                        smooth: true//smooth: true启用了图像的平滑处理。
+                        fillMode: Image.PreserveAspectCrop//填充模式，保持宽高比填充整个元素
+                        antialiasing: true//antialiasing: true启用了图像的抗锯齿处理。
+                        asynchronous: true//异步加载
+                    }
 
-                Image {
-                    id: delegateImage
-                    width: parent.width
-                    height: parent.height*0.9
-                    visible: false
-                    source: "file:///root/json/public/images/recommendImages/recommendImage18.png"
-                    smooth: true//smooth: true启用了图像的平滑处理。
-                    fillMode: Image.PreserveAspectCrop//填充模式，保持宽高比填充整个元素
-                    antialiasing: true//antialiasing: true启用了图像的抗锯齿处理。
-                    asynchronous: true//异步加载
-                }
+                    NumberAnimation {
+                        id: scaleEnlargeAnimation//放大动画
+                        target: delegateItemBack
+                        property: "scale"
+                        to: 1.06
+                        duration:100 // 动画持续时间为1秒
+                    }
+                    NumberAnimation {
+                        id: scaleReducegeAnimation//缩小动画
+                        target: delegateItemBack
+                        property: "scale"
+                        to: 1.0
+                        duration:100 // 动画持续时间为1秒
+                    }
+                    Rectangle{
+                        id:mask
+                        color: "black"//transparent
+                        width: delegateItemBack.width
+                        height: delegateItemBack.height
+                        radius: 12
+                        visible: false
+                        smooth: true
+                        antialiasing: true//antialiasing: true启用抗锯齿处理。
 
-                Rectangle{
-                    width: parent.width
-                    height: parent.height*0.1
-                    anchors.top: delegateImage.bottom
-                    color: "blue"
-                    RowLayout{
-                        anchors.fill: parent
-                        spacing: 6
-
-                        Image {
-                            id: upAvatar//头像
-                            Layout.preferredWidth: 20
-                            Layout.preferredHeight: 20
-                            Layout.leftMargin: 10
-                            Layout.alignment: Qt.AlignVCenter
-                            source: model.avatar//"file:///root/json/public/images/recommendImages/avatar2.png"
-                            TapHandler{
-                                onTapped: {
-                                    console.log("点击了头像")
-                                }
+                    }
+                    //这个遮罩即图片
+                    OpacityMask{
+                        Layout.preferredHeight: parent.height*0.8
+                        Layout.fillWidth: true   // 填充父容器的宽度
+                        Layout.fillHeight: true  // 填充父容器的高度
+                        source:delegateImage
+                        maskSource:mask
+                        visible:true
+                        antialiasing: true//启用抗锯齿处理
+                        HoverHandler{
+                            onHoveredChanged: {
+                                hovered ? console.log("鼠标进入") : console.log("鼠标离开")
+                                //选择的一项在表格中的索引
+                                //delegateItem.GridView.view.currentIndex = model.index;
+                                hovered ? scaleEnlargeAnimation.running=true : scaleReducegeAnimation.running=true
                             }
                         }
+                        TapHandler{
+                            onTapped: {
+                                console.log("鼠标点击了笔记封面缩略图")
+                                console.log("gridView.contentHeight: "+gridView.contentHeight)
+                                console.log("gridView.contentY: "+gridView.contentY)
+                                console.log("frmPage.height: "+frmPage.height)
+                                console.log("nPullHeight: "+nPullHeight)
+                            }
+                        }
+                    }
+
+                    Rectangle{
+                        id:title
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: parent.height*0.12
+                        color: "transparent"
                         Text {
-                            id:userName
-                            width: parent.width
-                            height: parent.height*0.1
-                            Layout.fillWidth: true
-                            text: model.name//"遂愿"
+                            id: titleText
+                            anchors.fill: parent
+                            text: "标题标题标题标题标题标题标题标题标题标题"
                             font.pointSize: 11
                             font.family: "微软雅黑"
                             wrapMode: Text.Wrap
-                            Layout.alignment: Qt.AlignCenter
-                            //Layout.leftMargin: 10
-                            // Rectangle{
-                            //     anchors.fill: parent
-                            //     color: "blue"
-                            // }
+                            verticalAlignment: Text.AlignVCenter   // 垂直居中
+                            leftPadding: 10  // 左侧内边距 10 像素
+                            rightPadding: 10  // 左侧内边距 10 像素
                             TapHandler{
                                 onTapped: {
-                                    console.log("点击了用户名")
+                                    console.log("点击了标题")
                                 }
                             }
                             HoverHandler{
@@ -92,98 +123,101 @@ Page {
                                 }
                             }
                         }
-                        Item {
+                    }
+
+                    Rectangle{
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: parent.height * 0.08
+                        color: "transparent"//color: "blue"
+                        RowLayout{
+                            anchors.fill: parent
+                            spacing: 6
+
+                            Image {
+                                id: upAvatar//头像
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                Layout.leftMargin: 10
+                                Layout.alignment: Qt.AlignVCenter
+                                source: model.avatar//"file:///root/json/public/images/recommendImages/avatar2.png"
+                                TapHandler{
+                                    onTapped: {
+                                        console.log("点击了头像")
+                                    }
+                                }
+                            }
+                            Text {
+                                id:userName
+                                width: parent.width
+                                height: parent.height*0.1
+                                Layout.fillWidth: true
+                                text: model.name//"遂愿"
+                                font.pointSize: 11
+                                font.family: "微软雅黑"
+                                wrapMode: Text.Wrap
+                                Layout.alignment: Qt.AlignCenter
+                                //Layout.leftMargin: 10
+                                // Rectangle{
+                                //     anchors.fill: parent
+                                //     color: "blue"
+                                // }
+                                TapHandler{
+                                    onTapped: {
+                                        console.log("点击了用户名")
+                                    }
+                                }
+                                HoverHandler{
+                                    onHoveredChanged: {
+                                        hovered ? parent.color="#f351c3" : parent.color="black"
+                                    }
+                                }
+                            }
+                            Item {
                                 Layout.fillWidth: true // 占据中间所有剩余空间
                             }
-                        Image {
-                            id: commentNumIcon//评论
-                            Layout.preferredWidth: 20
-                            Layout.preferredHeight: 20
-                            Layout.alignment: Qt.AlignVCenter
-                            source: "qrc:/static/icon/commentNumIcon.png"
-                            TapHandler{
-                                onTapped: {
-                                    console.log("点击了评论")
+                            Image {
+                                id: commentNumIcon//评论
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                Layout.alignment: Qt.AlignVCenter
+                                source: "qrc:/static/icon/commentNumIcon.png"
+                                TapHandler{
+                                    onTapped: {
+                                        console.log("点击了评论")
+                                    }
                                 }
                             }
-                        }
-                        Text {
-                            id:commentNum
-                            width: parent.width
-                            height: parent.height*0.1
-                            text: model.comNum//"1000+"
-                            font.pointSize: 11
-                            font.family: "微软雅黑"
-                            wrapMode: Text.Wrap
-                            Layout.alignment: Qt.AlignCenter
-                            Layout.rightMargin: 10
-                            TapHandler{
-                                onTapped: {
-                                    console.log("点击了评论数")
+                            Text {
+                                id:commentNum
+                                width: parent.width
+                                height: parent.height*0.1
+                                text: model.comNum//"1000+"
+                                font.pointSize: 11
+                                font.family: "微软雅黑"
+                                wrapMode: Text.Wrap
+                                Layout.alignment: Qt.AlignCenter
+                                Layout.rightMargin: 10
+                                TapHandler{
+                                    onTapped: {
+                                        console.log("点击了评论数")
+                                    }
                                 }
-                            }
-                            HoverHandler{
-                                onHoveredChanged: {
-                                    hovered ? parent.color="#f351c3" : parent.color="black"
+                                HoverHandler{
+                                    onHoveredChanged: {
+                                        hovered ? parent.color="#f351c3" : parent.color="black"
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                NumberAnimation {
-                    id: scaleEnlargeAnimation//放大动画
-                    target: delegateItemBack
-                    property: "scale"
-                    to: 1.06
-                    duration:100 // 动画持续时间为1秒
-                }
-                NumberAnimation {
-                    id: scaleReducegeAnimation//缩小动画
-                    target: delegateItemBack
-                    property: "scale"
-                    to: 1.0
-                    duration:100 // 动画持续时间为1秒
-                }
-                Rectangle{
-                    id:mask
-                    color: "black"//transparent
-                    anchors.fill: parent
-                    radius: 12
-                    visible: false
-                    smooth: true
-                    antialiasing: true//antialiasing: true启用抗锯齿处理。
-
-                }
-
-                //这个遮罩即图片
-                OpacityMask{
-                    anchors.fill: delegateImage
-                    source:delegateImage
-                    maskSource:mask
-                    visible:true
-                    antialiasing: true//antialiasing: true启用抗锯齿处理。
-                    HoverHandler{
-                        onHoveredChanged: {
-                            hovered ? console.log("鼠标进入") : console.log("鼠标离开")
-                            //选择的一项在表格中的索引
-                            //delegateItem.GridView.view.currentIndex = model.index;
-                            hovered ? scaleEnlargeAnimation.running=true : scaleReducegeAnimation.running=true
-                        }
-                    }
-                    TapHandler{
-                        onTapped: {
-                            console.log("鼠标点击了笔记封面缩略图")
-                            console.log("gridView.contentHeight: "+gridView.contentHeight)
-                            console.log("gridView.contentY: "+gridView.contentY)
-                            console.log("frmPage.height: "+frmPage.height)
-                            console.log("nPullHeight: "+nPullHeight)
-                        }
-                    }
                 }
             }
         }
     }
+
+
+
 
 
     //表格视图
@@ -197,43 +231,43 @@ Page {
         anchors.topMargin: 50
 
         //表格中单元格宽高
-        cellWidth: 260//frmWindow.width*0.24//200+30
-        cellHeight: 330//frmWindow.height*0.55//300+30
+        cellWidth: 270//frmWindow.width*0.24//200+30
+        cellHeight: 360//frmWindow.height*0.55//300+30
         model: listModel //表格视图数据源
         delegate: baseListDelegate //表格中单元格组件
         //boundsBehavior: Flickable.StopAtBounds//禁止下拉
         //组件初始化完成时添加数据到数据源
         Component.onCompleted: {
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "云韵",
-                        "comNum": 666
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "云韵",
+                                 "comNum": 666
+                             })
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "彩鳞",
-                        "comNum": 777
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "彩鳞",
+                                 "comNum": 777
+                             })
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "韩月",
-                        "comNum": 888
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "韩月",
+                                 "comNum": 888
+                             })
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "萧炎",
-                        "comNum": 999
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "萧炎",
+                                 "comNum": 999
+                             })
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "青鳞",
-                        "comNum": 1000
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "青鳞",
+                                 "comNum": 1000
+                             })
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "熏儿",
-                        "comNum": 21
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "熏儿",
+                                 "comNum": 21
+                             })
         }
 
         states: [
@@ -287,10 +321,10 @@ Page {
 
             //上面增加数据
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "云韵",
-                        "comNum": 111
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "云韵",
+                                 "comNum": 111
+                             })
             aniDownRefresh.start();
         }
     }
@@ -337,10 +371,10 @@ Page {
             busyUpRefresh.running = true;//显示等待指示器
             //上面增加数据
             listModel.append({
-                        "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
-                        "name": "云韵",
-                        "comNum": 123
-                    })
+                                 "avatar": "file:///root/json/public/images/recommendImages/avatar7.png",
+                                 "name": "云韵",
+                                 "comNum": 123
+                             })
             aniUpRefresh.start();//播放动画
         }
     }
